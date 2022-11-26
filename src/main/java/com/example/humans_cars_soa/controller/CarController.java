@@ -3,7 +3,6 @@ package com.example.humans_cars_soa.controller;
 
 import com.example.humans_cars_soa.exception.ModelException;
 import com.example.humans_cars_soa.model.Car;
-import com.example.humans_cars_soa.model.Car;
 import com.example.humans_cars_soa.service.CarService;
 import io.swagger.annotations.*;
 import org.springframework.data.domain.Page;
@@ -11,14 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.TransactionSystemException;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -63,7 +55,7 @@ public class CarController {
                 name,
                 cool,
                 maxSeats_min,
-                maxSeats_max),HttpStatus.OK);
+                maxSeats_max), HttpStatus.OK);
     }
 
 

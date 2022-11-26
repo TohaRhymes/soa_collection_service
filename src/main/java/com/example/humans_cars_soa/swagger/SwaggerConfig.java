@@ -1,4 +1,5 @@
 package com.example.humans_cars_soa.swagger;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;

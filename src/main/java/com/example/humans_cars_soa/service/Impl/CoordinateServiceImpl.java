@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 
-import javafx.util.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -4,8 +4,6 @@ import com.example.humans_cars_soa.exception.ModelException;
 import com.example.humans_cars_soa.model.Car;
 import org.springframework.data.domain.Page;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public interface CarService {
     public Page fetchAllCars(Integer page,
@@ -15,7 +13,7 @@ public interface CarService {
                              String name,
                              Boolean cool,
                              Integer maxSeats_min,
-                             Integer maxSeats_max) ;
+                             Integer maxSeats_max);
 
     public Car fetchCarById(Long id);
 
@@ -23,6 +21,6 @@ public interface CarService {
 
     public boolean deleteCarById(Long id);
 
-    public boolean updateCarById(Long id , String name, Boolean cool, Integer maxSeats) throws ModelException;
+    public boolean updateCarById(Long id, String name, Boolean cool, Integer maxSeats) throws ModelException;
 
 }

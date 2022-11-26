@@ -8,9 +8,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.Example;
-import io.swagger.annotations.ExampleProperty;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;

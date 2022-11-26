@@ -13,7 +13,6 @@ import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 
 @RestController
@@ -173,7 +172,7 @@ public class HumanController {
     }
 
 
-    @GetMapping(path ="/{human-id}/mood/{mood}",
+    @GetMapping(path = "/{human-id}/mood/{mood}",
             produces = MediaType.APPLICATION_XML_VALUE,
             consumes = MediaType.ALL_VALUE)
     @ApiOperation(value = "Change human.",

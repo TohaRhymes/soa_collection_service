@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 
