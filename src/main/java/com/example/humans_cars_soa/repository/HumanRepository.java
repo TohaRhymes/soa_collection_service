@@ -21,40 +21,42 @@ public interface HumanRepository extends CrudRepository<Human, Long>, JpaReposit
 
     @Query(value = "SELECT human.id, " +
             "human.name, " +
-            "human.creation_date, " +
-            "human.real_hero, " +
-            "human.has_toothpick, " +
-            "human.impact_speed, " +
-            "human.soundtrack_name, " +
-            "human.minutes_of_waiting, " +
+            "human.creationDate, " +
+            "human.realHero, " +
+            "human.hasToothpick, " +
+            "human.impactSpeed, " +
+            "human.soundtrackName, " +
+            "human.minutesOfWaiting, " +
             "human.mood, " +
-            "human.is_driver, " +
+            "human.isDriver, " +
             "coordinate.id AS coordinate_id, " +
             "coordinate.x, " +
             "coordinate.y, " +
             "car.id AS car_id, " +
             "car.name AS car_name, " +
             "car.cool, " +
-            "car.max_seats " +
-            "FROM human " +
-            "LEFT JOIN coordinate ON human.coordinate_id = coordinate.id " +
-            "LEFT JOIN car ON human.car_id = car.id " +
+            "car.maxSeats " +
+            "FROM Human human " +
+            "LEFT JOIN Coordinate coordinate ON human.coordinate.id = coordinate.id " +
+            "LEFT JOIN Car car ON human.car.id = car.id " +
             "WHERE (LOWER(human.name) like LOWER(:name)) " +
-            "AND human.creation_date >= :creationDate_min and human.creation_date <= :creationDate_max " +
-            "AND (:realHero IS NULL OR COALESCE(CAST(CAST(:realHero AS CHARACTER VARYING) AS BOOLEAN), human.real_hero) = human.real_hero )" +
-            "AND (:hasToothpick IS NULL OR COALESCE(CAST(CAST(:hasToothpick AS CHARACTER VARYING) AS BOOLEAN), human.has_toothpick) = human.has_toothpick )" +
-            "AND human.impact_speed >= :impactSpeed_min and human.impact_speed <= :impactSpeed_max " +
-            "AND (LOWER(human.soundtrack_name) like LOWER(:soundtrackName)) " +
-            "AND human.minutes_of_waiting >= :minutesOfWaiting_min and human.minutes_of_waiting <= :minutesOfWaiting_max " +
-            "AND (LOWER(human.mood) like LOWER(:mood)  or :real_mood is null)" +
+            "AND human.creationDate >= :creationDate_min and human.creationDate <= :creationDate_max " +
+            "AND (:realHero IS NULL OR human.realHero = :realHero ) " +
+            "AND (:hasToothpick IS NULL OR human.hasToothpick = :hasToothpick ) " +
+            "AND human.impactSpeed >= :impactSpeed_min and human.impactSpeed <= :impactSpeed_max " +
+            "AND (LOWER(human.soundtrackName) like LOWER(:soundtrackName)) " +
+            "AND human.minutesOfWaiting >= :minutesOfWaiting_min and human.minutesOfWaiting <= :minutesOfWaiting_max " +
+            "AND (LOWER(human.mood) like LOWER(:mood)  or :real_mood is null) " +
             "AND coordinate.x >= :x_min and coordinate.x <= :x_max " +
             "AND coordinate.y >= :y_min and coordinate.y <= :y_max " +
             "AND ((LOWER(car.name) like LOWER(:carName)) or :real_carName is null) " +
-            "and ((:carCool IS NULL OR COALESCE(CAST(CAST(:carCool AS CHARACTER VARYING) AS BOOLEAN), car.cool) = car.cool )) " +
-            "and ((:carMaxSeats_min <= car.max_seats and car.max_seats  <= :carMaxSeats_max)  or (:real_carMaxSeats_min is null and :real_carMaxSeats_max is null) )" +
-            "AND (:isDriver IS NULL OR COALESCE(CAST(CAST(:isDriver AS CHARACTER VARYING) AS BOOLEAN), human.is_driver) = human.is_driver )"
-            , nativeQuery = true)
-    Page<Object[]> findHumanFilter(Pageable pageable,
+            "and (:carCool IS NULL OR car.cool = :carCool ) " +
+            "and ((:carMaxSeats_min <= car.maxSeats and car.maxSeats  <= :carMaxSeats_max)  or (:real_carMaxSeats_min is null and :real_carMaxSeats_max is null) ) " +
+            "AND (:isDriver IS NULL OR  human.isDriver = :isDriver ) " +
+            ""
+            , nativeQuery = false)
+    Page<Object[]> findHumanFilter(Pageable pageable
+            ,
                                    String name,
                                    LocalDate creationDate_min,
                                    LocalDate creationDate_max,
@@ -77,8 +79,10 @@ public interface HumanRepository extends CrudRepository<Human, Long>, JpaReposit
                                    Integer real_carMaxSeats_min,
                                    Integer real_carMaxSeats_max,
                                    Integer carMaxSeats_min,
-                                   Integer carMaxSeats_max,
-                                   Boolean isDriver);
+                                   Integer carMaxSeats_max
+            ,
+                                   Boolean isDriver
+    );
 
 
     List<Human> findHumansByCarId(Long id);

@@ -90,7 +90,8 @@ public class HumanServiceImpl implements HumanService {
         carMaxSeats_min = checkNull(carMaxSeats_min, Integer.MIN_VALUE);
         carMaxSeats_max = checkNull(carMaxSeats_max, Integer.MAX_VALUE);
         Pageable pageable = getPageable(page, size, sort, order);
-        Page<Object[]> start = humanRepository.findHumanFilter(pageable,
+        Page<Object[]> start = humanRepository.findHumanFilter(pageable
+                ,
                 "%" + name + "%",
                 creationDate_min,
                 creationDate_max,
@@ -113,12 +114,14 @@ public class HumanServiceImpl implements HumanService {
                 real_carMaxSeats_min,
                 real_carMaxSeats_max,
                 carMaxSeats_min,
-                carMaxSeats_max,
-                isDriver);
+                carMaxSeats_max
+                ,
+                isDriver
+        );
         List<Human> finish = new ArrayList<>();
         for (Object[] el : start) {
             Human new_el = new Human();
-            new_el.setId(((BigInteger) el[0]).longValue());
+            new_el.setId((Long)el[0]);
             if (el[1] != null) {
                 new_el.setName((String) el[1]);
             }
@@ -140,24 +143,24 @@ public class HumanServiceImpl implements HumanService {
             if (el[9] != null) {
                 new_el.setIsDriver((Boolean) el[9]);
             }
-            String new_mood = (String) el[8];
-            if (new_mood != null) {
-                switch (new_mood.toLowerCase().strip()) {
-                    case ("sorrow") -> new_el.setMood(Mood.SORROW);
-                    case ("apathy") -> new_el.setMood(Mood.APATHY);
-                    case ("frenzy") -> new_el.setMood(Mood.FRENZY);
-                }
-            }
+            new_el.setMood((Mood)el[8]);
+//            if (new_mood != null) {
+//                switch (new_mood.toLowerCase().strip()) {
+//                    case ("sorrow") -> new_el.setMood(Mood.SORROW);
+//                    case ("apathy") -> new_el.setMood(Mood.APATHY);
+//                    case ("frenzy") -> new_el.setMood(Mood.FRENZY);
+//                }
+//            }
 
             Coordinate new_coord = new Coordinate();
-            new_coord.setId(((BigInteger) el[10]).longValue())
+            new_coord.setId(((Long) el[10]).longValue())
                     .setX((Integer) el[11])
                     .setY((Integer) el[12]);
             new_el.setCoordinate(new_coord);
 
             Car new_car = new Car();
             if (el[13] != null) {
-                new_car.setId(((BigInteger) el[13]).longValue())
+                new_car.setId(((Long) el[13]).longValue())
                         .setName((String) el[14])
                         .setMaxSeats((Integer) el[16]);
                 if (el[15] != null) {
