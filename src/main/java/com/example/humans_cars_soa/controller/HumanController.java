@@ -99,25 +99,15 @@ public class HumanController {
 
     @PostMapping(path = "",
             produces = MediaType.APPLICATION_XML_VALUE,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+            consumes = MediaType.APPLICATION_XML_VALUE)
     @ApiOperation(value = "Produce new human.",
             produces = MediaType.APPLICATION_XML_VALUE,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Human> addHuman(@ApiParam(name = "name", required = true) @RequestParam(name = "name", required = true) String name,
-                                          @ApiParam(name = "real_hero", required = true) @RequestParam(name = "real_hero", required = true) Boolean realHero,
-                                          @ApiParam(name = "has_toothpick", required = false) @RequestParam(name = "has_toothpick", required = false) Boolean hasToothpick,
-                                          @ApiParam(name = "impact_speed", required = true) @RequestParam(name = "impact_speed", required = true) Float impactSpeed,
-                                          @ApiParam(name = "soundtrack_name", required = true) @RequestParam(name = "soundtrack_name", required = true) String soundtrackName,
-                                          @ApiParam(name = "minutes_of_waiting", required = true) @RequestParam(name = "minutes_of_waiting", required = true) Integer minutesOfWaiting,
-                                          @ApiParam(name = "mood", required = false) @RequestParam(name = "mood", required = false) String mood,
-                                          @ApiParam(name = "x", required = true) @RequestParam(name = "x", required = true) Integer x,
-                                          @ApiParam(name = "y", required = true) @RequestParam(name = "y", required = true) Integer y,
-                                          @ApiParam(name = "car_id", required = false) @RequestParam(name = "car_id", required = false) Long carId,
-                                          @ApiParam(name = "is_driver", required = false) @RequestParam(name = "is_driver", required = false) Boolean isDriver) throws ModelException {
+            consumes = MediaType.APPLICATION_XML_VALUE)
+    public ResponseEntity<Human> addHuman(@ApiParam(name = "human", required = true) @RequestBody(required = true) Human human) throws ModelException {
         try {
-            Human human = humanService.saveHuman(name, realHero, hasToothpick, impactSpeed,
-                    soundtrackName, minutesOfWaiting, mood, x, y, carId, isDriver);
-            return new ResponseEntity<>(human, HttpStatus.OK);
+            Human new_human = humanService.saveHuman(human.getName(), human.getRealHero(), human.getHasToothpick(), human.getImpactSpeed(),
+                    human.getSoundtrackName(), human.getMinutesOfWaiting(), human.getMood().getMood(), human.getCoordinate() == null ? null : human.getCoordinate().getX(), human.getCoordinate() == null ? null : human.getCoordinate().getY(), null, human.getIsDriver());
+            return new ResponseEntity<>(new_human, HttpStatus.OK);
         } catch (TransactionSystemException e) {
             System.out.println(e.getMessage());
             //Limits for x/y: 400
@@ -134,32 +124,22 @@ public class HumanController {
 
     @PutMapping(path = "/{human-id}",
             produces = MediaType.APPLICATION_XML_VALUE,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+            consumes = MediaType.APPLICATION_XML_VALUE)
     @ApiOperation(value = "Change human.",
             produces = MediaType.APPLICATION_XML_VALUE,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+            consumes = MediaType.APPLICATION_XML_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully added"),
             @ApiResponse(code = 400, message = "Error formating: (check values requirements and restrictions)."),
             @ApiResponse(code = 500, message = "Internal server Error")
     })
     public HttpStatus updateHuman(@ApiParam("human-id") @PathVariable(name = "human-id") Long id,
-                                  @ApiParam(name = "name", required = false) @RequestParam(name = "name", required = false) String name,
-                                  @ApiParam(name = "real_hero", required = false) @RequestParam(name = "real_hero", required = false) Boolean realHero,
-                                  @ApiParam(name = "has_toothpick", required = false) @RequestParam(name = "has_toothpick", required = false) Boolean hasToothpick,
-                                  @ApiParam(name = "impact_speed", required = false) @RequestParam(name = "impact_speed", required = false) Float impactSpeed,
-                                  @ApiParam(name = "soundtrack_name", required = false) @RequestParam(name = "soundtrack_name", required = false) String soundtrackName,
-                                  @ApiParam(name = "minutes_of_waiting", required = false) @RequestParam(name = "minutes_of_waiting", required = false) Integer minutesOfWaiting,
-                                  @ApiParam(name = "mood", required = false) @RequestParam(name = "mood", required = false) String mood,
-                                  @ApiParam(name = "x", required = false) @RequestParam(name = "x", required = false) Integer x,
-                                  @ApiParam(name = "y", required = false) @RequestParam(name = "y", required = false) Integer y,
-                                  @ApiParam(name = "car_id", required = false) @RequestParam(name = "car_id", required = false) Long carId,
-                                  @ApiParam(name = "is_driver", required = false) @RequestParam(name = "is_driver", required = false) Boolean isDriver
+                                  @ApiParam(name = "human") @RequestBody() Human human
     ) throws ModelException {
 //        System.out.println("LMAO");
         try {
-            if (humanService.updateHumanById(id, name, realHero, hasToothpick, impactSpeed,
-                    soundtrackName, minutesOfWaiting, mood, x, y, carId, isDriver)) {
+            if (humanService.updateHumanById(id, human.getName(), human.getRealHero(), human.getHasToothpick(), human.getImpactSpeed(),
+                    human.getSoundtrackName(), human.getMinutesOfWaiting(), human.getMood().getMood(), human.getCoordinate() == null ? null : human.getCoordinate().getX(), human.getCoordinate() == null ? null : human.getCoordinate().getY(), null, human.getIsDriver())) {
                 return HttpStatus.OK;
             } else {
                 // Server error: something happened        500
@@ -194,6 +174,30 @@ public class HumanController {
                 return HttpStatus.INTERNAL_SERVER_ERROR;
             }
         } catch (ModelException | TransactionSystemException e) {
+            // ID not found (400)
+            return HttpStatus.BAD_REQUEST;
+        }
+    }
+
+    @PutMapping(path = "/{human-id}/car/{car-id}",
+            consumes = MediaType.ALL_VALUE)
+    @ApiOperation(value = "Change car of human",
+            consumes = MediaType.ALL_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully updated"),
+            @ApiResponse(code = 400, message = "Bad request"),
+            @ApiResponse(code=500, message = "Internal server Error")
+    })
+    public HttpStatus updateHumanWithCar(@ApiParam(name = "human-id", required = true) @PathVariable(name = "human-id", required = true) Long humanId,
+                                            @ApiParam(name = "car-id", required = true) @PathVariable(name = "car-id", required = true) Long carId) {
+        try {
+            if (humanService.updateHumanById(humanId, null, null, null, null, null, null, null, null, null, carId, null)) {
+                return HttpStatus.OK;
+            } else {
+                // Server error: something happened        500
+                return HttpStatus.INTERNAL_SERVER_ERROR;
+            }
+        }  catch (ModelException | TransactionSystemException e) {
             // ID not found (400)
             return HttpStatus.BAD_REQUEST;
         }

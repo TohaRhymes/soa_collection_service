@@ -1,5 +1,6 @@
 package com.example.humans_cars_soa.model;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -20,6 +21,7 @@ public class Car implements Serializable {
     @ApiModelProperty(notes = "Id MUST be unique. It is also auto-generated.",
             example = "1",
             required = true)
+
     private Long id;
 
 

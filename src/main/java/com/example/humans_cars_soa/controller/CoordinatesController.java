@@ -60,21 +60,18 @@ public class CoordinatesController {
 
     @PostMapping(path = "",
             produces = MediaType.APPLICATION_XML_VALUE,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+            consumes = MediaType.APPLICATION_XML_VALUE)
     @ApiOperation(value = "Produce new coordinate.",
             produces = MediaType.APPLICATION_XML_VALUE,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+            consumes = MediaType.APPLICATION_XML_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully added"),
             @ApiResponse(code = 400, message = "Error formating: (check values requirements and restrictions)."),
             @ApiResponse(code = 500, message = "Internal server Error")
     })
-    public ResponseEntity<Coordinate> addCoordinate(@ApiParam("x") @RequestParam(name = "x") Integer x,
-                                                    @ApiParam("y") @RequestParam(name = "y") Integer y) {
+    public ResponseEntity<Coordinate> addCoordinate(@ApiParam(name = "coordinate", required = true) @RequestBody(required = true) Coordinate coordinate) {
         try {
-            return new ResponseEntity<>(coordinateService.saveCoordinate(new Coordinate()
-                    .setX(x)
-                    .setY(y)), HttpStatus.OK
+            return new ResponseEntity<>(coordinateService.saveCoordinate(coordinate), HttpStatus.OK
             );
         } catch (TransactionSystemException e) {
             //Limits for x/y: 500
@@ -85,20 +82,19 @@ public class CoordinatesController {
 
     @PutMapping(path = "/{coordinate-id}",
             produces = MediaType.APPLICATION_XML_VALUE,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+            consumes = MediaType.APPLICATION_XML_VALUE)
     @ApiOperation(value = "Change coordinate.",
             produces = MediaType.APPLICATION_XML_VALUE,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+            consumes = MediaType.APPLICATION_XML_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated"),
             @ApiResponse(code = 400, message = "Id not found or Error formating: (check values requirements and restrictions)."),
             @ApiResponse(code = 500, message = "Internal server Error")
     })
     public HttpStatus updateCoordinate(@ApiParam("coordinate-id") @PathVariable(name = "coordinate-id") Long id,
-                                       @ApiParam("x") @RequestParam(name = "x", required = false) Integer x,
-                                       @ApiParam("y") @RequestParam(name = "y", required = false) Integer y) throws ModelException {
+                                       @ApiParam("coordinate") @RequestBody(required = true) Coordinate coordinate) throws ModelException {
         try {
-            if (coordinateService.updateCoordinateById(id, x, y)) {
+            if (coordinateService.updateCoordinateById(id, coordinate.getX(), coordinate.getY())) {
                 return HttpStatus.OK;
             } else {
                 // Server error: something happened        500

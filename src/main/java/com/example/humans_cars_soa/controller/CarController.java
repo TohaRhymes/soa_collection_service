@@ -59,48 +59,68 @@ public class CarController {
     }
 
 
+//    @PostMapping(path = "",
+//            produces = MediaType.APPLICATION_XML_VALUE,
+//            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @ApiOperation(value = "Produce new car.",
+//            produces = MediaType.APPLICATION_XML_VALUE,
+//            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "Successfully added"),
+//            @ApiResponse(code = 400, message = "Error formatting"),
+//            @ApiResponse(code = 500, message = "Internal server Error")
+//    })
+//    public ResponseEntity<Car> _addCar(@ApiParam(name = "name", example = "Ferrari", required = true) @RequestParam(name = "name", required = true) String name,
+//                                      @ApiParam(name = "cool", required = false) @RequestParam(name = "cool", required = false) Boolean cool,
+//                                      @ApiParam(name = "max_seats", required = true) @RequestParam(name = "max_seats", required = true) Integer maxSeats) {
+//        try {
+//            return new ResponseEntity<>(carService.saveCar(new Car()
+//                    .setName(name)
+//                    .setCool(cool)
+//                    .setMaxSeats(maxSeats)), HttpStatus.OK
+//            );
+//        } catch (TransactionSystemException e) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//    }
+
     @PostMapping(path = "",
             produces = MediaType.APPLICATION_XML_VALUE,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+            consumes = MediaType.APPLICATION_XML_VALUE)
     @ApiOperation(value = "Produce new car.",
             produces = MediaType.APPLICATION_XML_VALUE,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+            consumes = MediaType.APPLICATION_XML_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully added"),
             @ApiResponse(code = 400, message = "Error formatting"),
             @ApiResponse(code = 500, message = "Internal server Error")
     })
-    public ResponseEntity<Car> addCar(@ApiParam(name = "name", example = "Ferrari", required = true) @RequestParam(name = "name", required = true) String name,
-                                      @ApiParam(name = "cool", required = false) @RequestParam(name = "cool", required = false) Boolean cool,
-                                      @ApiParam(name = "max_seats", required = true) @RequestParam(name = "max_seats", required = true) Integer maxSeats) {
+    public ResponseEntity<Car> addCar(@ApiParam(name = "car",  required = true) @RequestBody(required = true) Car car) {
+        System.out.println("1111");
         try {
-            return new ResponseEntity<>(carService.saveCar(new Car()
-                    .setName(name)
-                    .setCool(cool)
-                    .setMaxSeats(maxSeats)), HttpStatus.OK
+            return new ResponseEntity<>(carService.saveCar(car), HttpStatus.OK
             );
         } catch (TransactionSystemException e) {
+            System.out.println();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping(path = "/{car-id}",
             produces = MediaType.APPLICATION_XML_VALUE,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+            consumes = MediaType.APPLICATION_XML_VALUE)
     @ApiOperation(value = "Change car.",
             produces = MediaType.APPLICATION_XML_VALUE,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+            consumes = MediaType.APPLICATION_XML_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated"),
             @ApiResponse(code = 400, message = "Error formatting or ID not found"),
             @ApiResponse(code = 500, message = "Internal server Error")
     })
     public HttpStatus updateCar(@ApiParam(name = "car-id", required = true) @PathVariable(name = "car-id", required = true) Long id,
-                                @ApiParam("name") @RequestParam(name = "name", required = false) String name,
-                                @ApiParam("cool") @RequestParam(name = "cool", required = false) Boolean cool,
-                                @ApiParam("max_seats") @RequestParam(name = "max_seats", required = false) Integer maxSeats) throws ModelException {
+                                @ApiParam("name") @RequestBody(required = false) Car car) throws ModelException {
         try {
-            if (carService.updateCarById(id, name, cool, maxSeats)) {
+            if (carService.updateCarById(id, car.getName(), car.getCool(), car.getMaxSeats())) {
                 return HttpStatus.OK;
             } else {
                 return HttpStatus.INTERNAL_SERVER_ERROR;

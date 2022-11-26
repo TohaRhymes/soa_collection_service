@@ -252,41 +252,43 @@ public class HumanServiceImpl implements HumanService {
 
                 log.info("Cooords id: {}", coordinate.getId());
 
-                Car car = null;
-                if (carId != null) {
-                    car = carService.fetchCarById(carId);
-                }
-                if (car == null)
-                    car = carService.saveCar(new Car().setName("Zhiguli").setMaxSeats(5));
-                log.info("Caar id: {}", car.getId());
+                human.setIsDriver(false);
 
-                human.setCar(car);
-                ArrayList<Human> hbs = this.fetchAllHumansByCarId(car.getId());
-                Boolean _isDriver = isDriver == null ? Boolean.FALSE : isDriver;
-                Boolean stolen = Boolean.FALSE;
-                if (hbs.size() == 0) {
-                    log.info("In - 1");
-                    _isDriver = Boolean.TRUE;
-                } else if (car.getMaxSeats().equals(hbs.size())) {
-                    log.info("In - 2");
-                    _isDriver = Boolean.TRUE;
-                    stolen = Boolean.TRUE;
-                }
-                if (_isDriver.equals(Boolean.TRUE)) {
-                    log.info("In - 3");
-                    for (Human hb : hbs) {
-                        if (hb.getIsDriver().equals(Boolean.TRUE) && stolen.equals(Boolean.TRUE)) {
-                            hb.setCar(carService.saveCar(new Car().setName("Zhiguli").setMaxSeats(5)));
-                            humanRepository.save(hb);
-                        } else if (hb.getIsDriver().equals(Boolean.TRUE)) {
-                            hb.setIsDriver(Boolean.FALSE);
-                        }
 
-                    }
-                }
-                human.setIsDriver(_isDriver);
+//                Car car = null;
+//                if (carId != null) {
+//                    car = carService.fetchCarById(carId);
+//                }
+//                if (car == null)
+//                    car = carService.saveCar(new Car().setName("Zhiguli").setMaxSeats(5));
+//                log.info("Caar id: {}", car.getId());
+//
+//                human.setCar(car);
+//                ArrayList<Human> hbs = this.fetchAllHumansByCarId(car.getId());
+//                Boolean _isDriver = isDriver == null ? Boolean.FALSE : isDriver;
+//                Boolean stolen = Boolean.FALSE;
+//                if (hbs.size() == 0) {
+//                    log.info("In - 1");
+//                    _isDriver = Boolean.TRUE;
+//                } else if (car.getMaxSeats().equals(hbs.size())) {
+//                    log.info("In - 2");
+//                    _isDriver = Boolean.TRUE;
+//                    stolen = Boolean.TRUE;
+//                }
+//                if (_isDriver.equals(Boolean.TRUE)) {
+//                    log.info("In - 3");
+//                    for (Human hb : hbs) {
+//                        if (hb.getIsDriver().equals(Boolean.TRUE) && stolen.equals(Boolean.TRUE)) {
+//                            hb.setCar(carService.saveCar(new Car().setName("Zhiguli").setMaxSeats(5)));
+//                            humanRepository.save(hb);
+//                        } else if (hb.getIsDriver().equals(Boolean.TRUE)) {
+//                            hb.setIsDriver(Boolean.FALSE);
+//                        }
+//
+//                    }
+//                }
+//                human.setIsDriver(_isDriver);
 
-                log.info("In - 4");
                 humanRepository.save(human);
                 log.info("Created hb with id number {}", human.getId());
                 return true;
@@ -354,42 +356,43 @@ public class HumanServiceImpl implements HumanService {
                 coordinateService.updateCoordinateById(coordinate.getId(), x, y);
 
 
-                Long previousCarId = human.getCar().getId();
-                Boolean _isDriver = Boolean.FALSE;
-                if (isDriver != null) {
-                    _isDriver = isDriver;
-                } else if (human.getIsDriver() != null) {
-                    _isDriver = human.getIsDriver();
-                }
-                Boolean stolen = Boolean.FALSE;
-                ArrayList<Human> hbs = null;
-                if (carId != null && !previousCarId.equals(carId)) {
-                    Car car = carService.fetchCarById(carId);
-                    if (car != null) {
-                        human.setCar(car);
-                        previousCarId = car.getId();
-                        hbs = this.fetchAllHumansByCarId(car.getId());
-                        if (hbs.size() == 0) {
-                            _isDriver = Boolean.TRUE;
-                        } else if (car.getMaxSeats().equals(hbs.size())) {
-                            _isDriver = Boolean.TRUE;
-                            stolen = Boolean.TRUE;
-                        }
-                    }
-                }
-                if (previousCarId != null && _isDriver.equals(Boolean.TRUE)) {
-                    if (hbs != null) {
-                        for (Human hb : hbs) {
-                            if (hb.getIsDriver().equals(Boolean.TRUE) && stolen.equals(Boolean.TRUE)) {
-                                hb.setCar(carService.saveCar(new Car().setName("Zhiguli").setMaxSeats(5)));
-                                humanRepository.save(hb);
-                            } else if (hb.getIsDriver().equals(Boolean.TRUE)) {
-                                hb.setIsDriver(Boolean.FALSE);
-                            }
-                        }
-                    }
-                }
-                human.setIsDriver(_isDriver);
+                human.setIsDriver(isDriver);
+//                Long previousCarId = human.getCar().getId();
+//                Boolean _isDriver = Boolean.FALSE;
+//                if (isDriver != null) {
+//                    _isDriver = isDriver;
+//                } else if (human.getIsDriver() != null) {
+//                    _isDriver = human.getIsDriver();
+//                }
+//                Boolean stolen = Boolean.FALSE;
+//                ArrayList<Human> hbs = null;
+//                if (carId != null && !previousCarId.equals(carId)) {
+//                    Car car = carService.fetchCarById(carId);
+//                    if (car != null) {
+//                        human.setCar(car);
+//                        previousCarId = car.getId();
+//                        hbs = this.fetchAllHumansByCarId(car.getId());
+//                        if (hbs.size() == 0) {
+//                            _isDriver = Boolean.TRUE;
+//                        } else if (car.getMaxSeats().equals(hbs.size())) {
+//                            _isDriver = Boolean.TRUE;
+//                            stolen = Boolean.TRUE;
+//                        }
+//                    }
+//                }
+//                if (previousCarId != null && _isDriver.equals(Boolean.TRUE)) {
+//                    if (hbs != null) {
+//                        for (Human hb : hbs) {
+//                            if (hb.getIsDriver().equals(Boolean.TRUE) && stolen.equals(Boolean.TRUE)) {
+//                                hb.setCar(carService.saveCar(new Car().setName("Zhiguli").setMaxSeats(5)));
+//                                humanRepository.save(hb);
+//                            } else if (hb.getIsDriver().equals(Boolean.TRUE)) {
+//                                hb.setIsDriver(Boolean.FALSE);
+//                            }
+//                        }
+//                    }
+//                }
+//                human.setIsDriver(_isDriver);
 
                 humanRepository.save(human);
                 log.info("Updated hb with id number {}", human.getId());
