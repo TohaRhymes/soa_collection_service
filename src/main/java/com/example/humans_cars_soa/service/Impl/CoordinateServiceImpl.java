@@ -3,10 +3,7 @@ package com.example.humans_cars_soa.service.Impl;
 import com.example.humans_cars_soa.exception.ModelException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import com.example.humans_cars_soa.model.Coordinate;
 import com.example.humans_cars_soa.repository.CoordinateRepository;
@@ -41,21 +38,21 @@ public class CoordinateServiceImpl implements CoordinateService {
 
     @Override
     @Transactional
-    public ArrayList<Coordinate> fetchAllCoordinates(Integer page,
-                                                     Integer size,
-                                                     String sort,
-                                                     String order,
-                                                     Integer x_min,
-                                                     Integer x_max,
-                                                     Integer y_min,
-                                                     Integer y_max) {
+    public Page fetchAllCoordinates(Integer page,
+                                    Integer size,
+                                    String sort,
+                                    String order,
+                                    Integer x_min,
+                                    Integer x_max,
+                                    Integer y_min,
+                                    Integer y_max) {
         x_min = checkNull(x_min, Integer.MIN_VALUE);
         x_max = checkNull(x_max, Integer.MAX_VALUE);
         y_min = checkNull(y_min, Integer.MIN_VALUE);
         y_max = checkNull(y_max, Integer.MAX_VALUE);
 
         Pageable pageable = getPageable(page, size, sort, order);
-        List<Object[]> start = coordinateRepository.findCoordinateFilter(pageable, x_min, x_max, y_min, y_max).toList();
+        Page<Object[]> start = coordinateRepository.findCoordinateFilter(pageable, x_min, x_max, y_min, y_max);
         List<Coordinate> finish = new ArrayList<>();
         for (Object[] el : start) {
             Coordinate new_el = new Coordinate();
@@ -64,7 +61,7 @@ public class CoordinateServiceImpl implements CoordinateService {
                     .setY((Integer) el[2]);
             finish.add(new_el);
         }
-        return new ArrayList<>(finish);
+        return new PageImpl<>(finish, pageable, start.getTotalElements());
     }
 
     @Override

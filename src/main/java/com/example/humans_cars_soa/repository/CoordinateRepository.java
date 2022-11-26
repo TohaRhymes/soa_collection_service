@@ -18,6 +18,6 @@ public interface CoordinateRepository extends CrudRepository<Coordinate, Long>, 
     List<Coordinate> findByXAndY(Integer x, Integer y);
 
     @Query("SELECT coord.id, coord.x, coord.y FROM Coordinate coord WHERE coord.x >= :x_min and coord.x <= :x_max and coord.y >= :y_min and coord.y <= :y_max")
-    Stream<Object[]> findCoordinateFilter(Pageable pageable, Integer x_min, Integer x_max, Integer y_min, Integer y_max);
+    Page<Object[]> findCoordinateFilter(Pageable pageable, Integer x_min, Integer x_max, Integer y_min, Integer y_max);
 
 }

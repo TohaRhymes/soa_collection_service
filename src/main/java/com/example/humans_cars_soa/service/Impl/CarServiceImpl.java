@@ -7,6 +7,8 @@ import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,8 +19,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.example.humans_cars_soa.utils.Utils.*;
 import static com.example.humans_cars_soa.utils.Utils.checkNull;
@@ -46,7 +47,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     @Transactional
-    public ArrayList<Car> fetchAllCars(Integer page,
+    public Page fetchAllCars(Integer page,
                                        Integer size,
                                        String sort,
                                        String order,
@@ -59,7 +60,7 @@ public class CarServiceImpl implements CarService {
         maxSeats_max = checkNull(maxSeats_max, Integer.MAX_VALUE);
 
         Pageable pageable = getPageable(page, size, sort, order);
-        List<Object[]> start = carRepository.findCarFilter(pageable, "%" + name + "%", cool, maxSeats_min, maxSeats_max).toList();
+        Page<Object[]> start = carRepository.findCarFilter(pageable, "%" + name + "%", cool, maxSeats_min, maxSeats_max);
         List<Car> finish = new ArrayList<>();
         for (Object[] el : start) {
             Car new_el = new Car();
@@ -71,7 +72,7 @@ public class CarServiceImpl implements CarService {
             }
             finish.add(new_el);
         }
-        return new ArrayList<>(finish);
+        return new PageImpl<>(finish, pageable, start.getTotalElements());
     }
 
     @Override

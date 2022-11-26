@@ -2,6 +2,7 @@ package com.example.humans_cars_soa.repository;
 
 import com.example.humans_cars_soa.model.Car;
 import com.example.humans_cars_soa.model.Human;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -53,31 +54,31 @@ public interface HumanRepository extends CrudRepository<Human, Long>, JpaReposit
             "and ((:carMaxSeats_min <= car.max_seats and car.max_seats  <= :carMaxSeats_max)  or (:real_carMaxSeats_min is null and :real_carMaxSeats_max is null) )" +
             "AND (:isDriver IS NULL OR COALESCE(CAST(CAST(:isDriver AS CHARACTER VARYING) AS BOOLEAN), human.is_driver) = human.is_driver )"
             , nativeQuery = true)
-    Stream<Object[]> findHumanFilter(Pageable pageable,
-                                     String name,
-                                     LocalDate creationDate_min,
-                                     LocalDate creationDate_max,
-                                     Boolean realHero,
-                                     Boolean hasToothpick,
-                                     Float impactSpeed_min,
-                                     Float impactSpeed_max,
-                                     String soundtrackName,
-                                     Integer minutesOfWaiting_min,
-                                     Integer minutesOfWaiting_max,
-                                     String real_mood,
-                                     String mood,
-                                     Integer x_min,
-                                     Integer x_max,
-                                     Integer y_min,
-                                     Integer y_max,
-                                     String real_carName,
-                                     String carName,
-                                     Boolean carCool,
-                                     Integer real_carMaxSeats_min,
-                                     Integer real_carMaxSeats_max,
-                                     Integer carMaxSeats_min,
-                                     Integer carMaxSeats_max,
-                                     Boolean isDriver);
+    Page<Object[]> findHumanFilter(Pageable pageable,
+                                   String name,
+                                   LocalDate creationDate_min,
+                                   LocalDate creationDate_max,
+                                   Boolean realHero,
+                                   Boolean hasToothpick,
+                                   Float impactSpeed_min,
+                                   Float impactSpeed_max,
+                                   String soundtrackName,
+                                   Integer minutesOfWaiting_min,
+                                   Integer minutesOfWaiting_max,
+                                   String real_mood,
+                                   String mood,
+                                   Integer x_min,
+                                   Integer x_max,
+                                   Integer y_min,
+                                   Integer y_max,
+                                   String real_carName,
+                                   String carName,
+                                   Boolean carCool,
+                                   Integer real_carMaxSeats_min,
+                                   Integer real_carMaxSeats_max,
+                                   Integer carMaxSeats_min,
+                                   Integer carMaxSeats_max,
+                                   Boolean isDriver);
 
 
     List<Human> findHumansByCarId(Long id);

@@ -2,18 +2,20 @@ package com.example.humans_cars_soa.service;
 
 import com.example.humans_cars_soa.exception.ModelException;
 import com.example.humans_cars_soa.model.Car;
+import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface CarService {
-    public ArrayList<Car> fetchAllCars(Integer page,
-                                       Integer size,
-                                       String sort,
-                                       String order,
-                                       String name,
-                                       Boolean cool,
-                                       Integer maxSeats_min,
-                                       Integer maxSeats_max) ;
+    public Page fetchAllCars(Integer page,
+                             Integer size,
+                             String sort,
+                             String order,
+                             String name,
+                             Boolean cool,
+                             Integer maxSeats_min,
+                             Integer maxSeats_max) ;
 
     public Car fetchCarById(Long id);
 

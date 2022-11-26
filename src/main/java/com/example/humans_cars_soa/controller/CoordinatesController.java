@@ -6,6 +6,7 @@ import com.example.humans_cars_soa.model.Coordinate;
 import io.swagger.annotations.*;
 
 import com.example.humans_cars_soa.service.CoordinateService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,23 +41,22 @@ public class CoordinatesController {
             @ApiResponse(code = 200, message = "Successfully fetched"),
             @ApiResponse(code = 500, message = "Internal server Error")
     })
-    public ResponseEntity<List<Coordinate>> fetchAllCoordinates(@ApiParam(name = "page", required = false, example = "0") @RequestParam(value = "page", required = false) Integer page,
-                                                                @ApiParam(name = "size", required = false, example = "5") @RequestParam(value = "size", required = false) Integer size,
-                                                                @ApiParam(name = "sort", required = false, example = "name") @RequestParam(value = "sort", required = false) String sort,
-                                                                @ApiParam(name = "order", required = false, example = "asc", allowableValues = "asc, desc") @RequestParam(value = "order", required = false) String order,
-                                                                @ApiParam(name = "x_min", required = false) @RequestParam(value = "x_min", required = false) Integer x_min,
-                                                                @ApiParam(name = "x_max", required = false) @RequestParam(value = "x_max", required = false) Integer x_max,
-                                                                @ApiParam(name = "y_min", required = false) @RequestParam(value = "y_min", required = false) Integer y_min,
-                                                                @ApiParam(name = "y_max", required = false) @RequestParam(value = "y_max", required = false) Integer y_max) {
-        List<Coordinate> ll = coordinateService.fetchAllCoordinates(page,
+    public ResponseEntity<Page> fetchAllCoordinates(@ApiParam(name = "page", required = false, example = "0") @RequestParam(value = "page", required = false) Integer page,
+                                                    @ApiParam(name = "size", required = false, example = "5") @RequestParam(value = "size", required = false) Integer size,
+                                                    @ApiParam(name = "sort", required = false, example = "name") @RequestParam(value = "sort", required = false) String sort,
+                                                    @ApiParam(name = "order", required = false, example = "asc", allowableValues = "asc, desc") @RequestParam(value = "order", required = false) String order,
+                                                    @ApiParam(name = "x_min", required = false) @RequestParam(value = "x_min", required = false) Integer x_min,
+                                                    @ApiParam(name = "x_max", required = false) @RequestParam(value = "x_max", required = false) Integer x_max,
+                                                    @ApiParam(name = "y_min", required = false) @RequestParam(value = "y_min", required = false) Integer y_min,
+                                                    @ApiParam(name = "y_max", required = false) @RequestParam(value = "y_max", required = false) Integer y_max) {
+        return new ResponseEntity<>(coordinateService.fetchAllCoordinates(page,
                 size,
                 sort,
                 order,
                 x_min,
                 x_max,
                 y_min,
-                y_max);
-        return new ResponseEntity<>(ll, HttpStatus.OK);
+                y_max), HttpStatus.OK);
         // Server error: something happened        500
     }
 

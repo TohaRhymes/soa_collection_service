@@ -7,6 +7,8 @@ import com.example.humans_cars_soa.service.CoordinateService;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -45,30 +47,30 @@ public class HumanServiceImpl implements HumanService {
 
     @Override
     @Transactional
-    public ArrayList<Human> fetchAllHumans(Integer page,
-                                           Integer size,
-                                           String sort,
-                                           String order,
-                                           String name,
-                                           LocalDate creationDate_min,
-                                           LocalDate creationDate_max,
-                                           Boolean realHero,
-                                           Boolean hasToothpick,
-                                           Float impactSpeed_min,
-                                           Float impactSpeed_max,
-                                           String soundtrackName,
-                                           Integer minutesOfWaiting_min,
-                                           Integer minutesOfWaiting_max,
-                                           String mood,
-                                           Integer x_min,
-                                           Integer x_max,
-                                           Integer y_min,
-                                           Integer y_max,
-                                           String carName,
-                                           Boolean carCool,
-                                           Integer carMaxSeats_min,
-                                           Integer carMaxSeats_max,
-                                           Boolean isDriver) {
+    public Page fetchAllHumans(Integer page,
+                               Integer size,
+                               String sort,
+                               String order,
+                               String name,
+                               LocalDate creationDate_min,
+                               LocalDate creationDate_max,
+                               Boolean realHero,
+                               Boolean hasToothpick,
+                               Float impactSpeed_min,
+                               Float impactSpeed_max,
+                               String soundtrackName,
+                               Integer minutesOfWaiting_min,
+                               Integer minutesOfWaiting_max,
+                               String mood,
+                               Integer x_min,
+                               Integer x_max,
+                               Integer y_min,
+                               Integer y_max,
+                               String carName,
+                               Boolean carCool,
+                               Integer carMaxSeats_min,
+                               Integer carMaxSeats_max,
+                               Boolean isDriver) {
         name = checkNull(name, "");
         soundtrackName = checkNull(soundtrackName, "");
         String real_mood = mood;
@@ -90,7 +92,7 @@ public class HumanServiceImpl implements HumanService {
         carMaxSeats_min = checkNull(carMaxSeats_min, Integer.MIN_VALUE);
         carMaxSeats_max = checkNull(carMaxSeats_max, Integer.MAX_VALUE);
         Pageable pageable = getPageable(page, size, sort, order);
-        List<Object[]> start = humanRepository.findHumanFilter(pageable,
+        Page<Object[]> start = humanRepository.findHumanFilter(pageable,
                 "%" + name + "%",
                 creationDate_min,
                 creationDate_max,
@@ -114,9 +116,8 @@ public class HumanServiceImpl implements HumanService {
                 real_carMaxSeats_max,
                 carMaxSeats_min,
                 carMaxSeats_max,
-                isDriver).toList();
+                isDriver);
         List<Human> finish = new ArrayList<>();
-        System.out.println(start.size());
         for (Object[] el : start) {
             Human new_el = new Human();
             new_el.setId(((BigInteger) el[0]).longValue());
@@ -169,7 +170,7 @@ public class HumanServiceImpl implements HumanService {
 
             finish.add(new_el);
         }
-        return new ArrayList<>(finish);
+        return new PageImpl<>(finish, pageable, start.getTotalElements());
     }
 
     public ArrayList<Human> _fetchAllHumans(Integer page, Integer size, String sort, String order) {

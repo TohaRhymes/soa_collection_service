@@ -6,13 +6,19 @@ import com.example.humans_cars_soa.model.Car;
 import com.example.humans_cars_soa.model.Car;
 import com.example.humans_cars_soa.service.CarService;
 import io.swagger.annotations.*;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.TransactionSystemException;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -40,14 +46,16 @@ public class CarController {
             @ApiResponse(code = 200, message = "Successfully fetched"),
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
-    public ResponseEntity<List<Car>> fetchAllCars(@ApiParam(name = "page", required = false, example = "0") @RequestParam(value = "page", required = false) Integer page,
-                                                  @ApiParam(name = "size", required = false, example = "5") @RequestParam(value = "size", required = false) Integer size,
-                                                  @ApiParam(name = "sort", required = false, example = "name") @RequestParam(value = "sort", required = false) String sort,
-                                                  @ApiParam(name = "order", required = false, example = "asc", allowableValues = "asc, desc") @RequestParam(value = "order", required = false) String order,
-                                                  @ApiParam(name = "name", value = "part of the name", required = false, example = "Fer") @RequestParam(value = "name", required = false) String name,
-                                                  @ApiParam(name = "cool", required = false, type = "boolean", example = "false") @RequestParam(value = "cool", required = false) Boolean cool,
-                                                  @ApiParam(name = "max_seats_min", value = "Should be more than 0", required = false, example = "3") @RequestParam(value = "max_seats_min", required = false) Integer maxSeats_min,
-                                                  @ApiParam(name = "max_seats_max", value = "Should be more than 0", required = false, example = "5") @RequestParam(value = "max_seats_max", required = false) Integer maxSeats_max) {
+    public ResponseEntity<Page> fetchAllCars(@ApiParam(name = "page", required = false, example = "0") @RequestParam(value = "page", required = false) Integer page,
+                                             @ApiParam(name = "size", required = false, example = "5") @RequestParam(value = "size", required = false) Integer size,
+                                             @ApiParam(name = "sort", required = false, example = "name") @RequestParam(value = "sort", required = false) String sort,
+                                             @ApiParam(name = "order", required = false, example = "asc", allowableValues = "asc, desc") @RequestParam(value = "order", required = false) String order,
+                                             @ApiParam(name = "name", value = "part of the name", required = false, example = "Fer") @RequestParam(value = "name", required = false) String name,
+                                             @ApiParam(name = "cool", required = false, type = "boolean", example = "false") @RequestParam(value = "cool", required = false) Boolean cool,
+                                             @ApiParam(name = "max_seats_min", value = "Should be more than 0", required = false, example = "3") @RequestParam(value = "max_seats_min", required = false) Integer maxSeats_min,
+                                             @ApiParam(name = "max_seats_max", value = "Should be more than 0", required = false, example = "5") @RequestParam(value = "max_seats_max", required = false) Integer maxSeats_max) {
+
+
         return new ResponseEntity<>(carService.fetchAllCars(page,
                 size,
                 sort,
@@ -55,7 +63,7 @@ public class CarController {
                 name,
                 cool,
                 maxSeats_min,
-                maxSeats_max), HttpStatus.OK);
+                maxSeats_max),HttpStatus.OK);
     }
 
 
