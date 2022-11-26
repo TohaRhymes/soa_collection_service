@@ -118,7 +118,7 @@ public class CarController {
             @ApiResponse(code = 500, message = "Internal server Error")
     })
     public HttpStatus updateCar(@ApiParam(name = "car-id", required = true) @PathVariable(name = "car-id", required = true) Long id,
-                                @ApiParam("name") @RequestBody(required = false) Car car) throws ModelException {
+                                @ApiParam("car") @RequestBody(required = false) Car car) throws ModelException {
         try {
             if (carService.updateCarById(id, car.getName(), car.getCool(), car.getMaxSeats())) {
                 return HttpStatus.OK;
