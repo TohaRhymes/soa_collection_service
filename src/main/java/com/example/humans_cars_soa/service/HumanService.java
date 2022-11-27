@@ -12,6 +12,7 @@ public interface HumanService {
                                Integer size,
                                String sort,
                                String order,
+                               Long id,
                                String name,
                                LocalDate creationDate_min,
                                LocalDate creationDate_max,
@@ -23,15 +24,19 @@ public interface HumanService {
                                Integer minutesOfWaiting_min,
                                Integer minutesOfWaiting_max,
                                String mood,
+                               Long coordinateId,
                                Integer x_min,
                                Integer x_max,
                                Integer y_min,
                                Integer y_max,
-                               String carName,
+                               Long carId,
+                               String carName
+            ,
                                Boolean carCool,
                                Integer carMaxSeats_min,
                                Integer carMaxSeats_max,
-                               Boolean isDriver);
+                               Boolean isDriver
+    );
 
     public Human fetchHumanById(Long id);
 
@@ -50,8 +55,7 @@ public interface HumanService {
                            String soundtrackName,
                            Integer minutesOfWaiting,
                            String mood,
-                           Integer x,
-                           Integer y,
+                           Long coordinateId,
                            Long carId,
                            Boolean isDriver) throws ModelException;
 
@@ -63,8 +67,7 @@ public interface HumanService {
                                    String soundtrackName,
                                    Integer minutesOfWaiting,
                                    String mood,
-                                   Integer x,
-                                   Integer y,
+                                   Long coordinateId,
                                    Long carId,
                                    Boolean isDriver) throws ModelException;
 

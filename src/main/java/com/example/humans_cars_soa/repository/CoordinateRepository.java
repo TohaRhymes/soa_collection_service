@@ -17,7 +17,19 @@ import java.util.stream.Stream;
 public interface CoordinateRepository extends CrudRepository<Coordinate, Long>, JpaRepository<Coordinate, Long>, PagingAndSortingRepository<Coordinate, Long> {
     List<Coordinate> findByXAndY(Integer x, Integer y);
 
-    @Query("SELECT coord.id, coord.x, coord.y FROM Coordinate coord WHERE coord.x >= :x_min and coord.x <= :x_max and coord.y >= :y_min and coord.y <= :y_max")
-    Page<Object[]> findCoordinateFilter(Pageable pageable, Integer x_min, Integer x_max, Integer y_min, Integer y_max);
+    @Query("SELECT coord.id, coord.x, coord.y " +
+            "FROM Coordinate coord " +
+            "WHERE coord.id >= :id_min and coord.id <= :id_max " +
+            "AND coord.x >= :x_min " +
+            "and coord.x <= :x_max " +
+            "and coord.y >= :y_min " +
+            "and coord.y <= :y_max")
+    Page<Object[]> findCoordinateFilter(Pageable pageable,
+                                        Long id_min,
+                                        Long id_max,
+                                        Integer x_min,
+                                        Integer x_max,
+                                        Integer y_min,
+                                        Integer y_max);
 
 }

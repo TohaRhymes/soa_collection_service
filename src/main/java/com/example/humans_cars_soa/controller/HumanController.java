@@ -3,8 +3,10 @@ package com.example.humans_cars_soa.controller;
 
 import com.example.humans_cars_soa.exception.ModelException;
 import com.example.humans_cars_soa.model.Human;
+import com.example.humans_cars_soa.model.HumanDTO;
 import com.example.humans_cars_soa.service.HumanService;
 import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +22,7 @@ import java.time.LocalDate;
 @Api(value = "/v1/collection_api/humans",
         tags = "Humans",
         description = "Everything about humans")
+@Slf4j
 public class HumanController {
     private final HumanService humanService;
 
@@ -41,6 +44,7 @@ public class HumanController {
                                                @ApiParam(name = "size", required = false, example = "5") @RequestParam(value = "size", required = false) Integer size,
                                                @ApiParam(name = "sort", required = false, example = "name") @RequestParam(value = "sort", required = false) String sort,
                                                @ApiParam(name = "order", required = false, example = "asc", allowableValues = "asc, desc") @RequestParam(value = "order", required = false) String order,
+                                               @ApiParam(name = "id", required = false) @RequestParam(name = "id", required = false) Long id,
                                                @ApiParam(name = "name", required = false) @RequestParam(name = "name", required = false) String name,
                                                @ApiParam(name = "creation_date_min", value = "The minimal date of query", required = false, example = "2022-8-31") @RequestParam(name = "creation_date_min", required = false) String s_creationDate_min,
                                                @ApiParam(name = "creation_date_max", value = "The maximum date of query", required = false, example = "2022-12-31") @RequestParam(name = "creation_date_max", required = false) String s_creationDate_max,
@@ -52,10 +56,12 @@ public class HumanController {
                                                @ApiParam(name = "minutes_of_waiting_min", required = false) @RequestParam(name = "minutes_of_waiting_min", required = false) Integer minutesOfWaiting_min,
                                                @ApiParam(name = "minutes_of_waiting_max", required = false) @RequestParam(name = "minutes_of_waiting_max", required = false) Integer minutesOfWaiting_max,
                                                @ApiParam(name = "mood", required = false) @RequestParam(name = "mood", required = false) String mood,
+                                               @ApiParam(name = "coordinate_id", required = false) @RequestParam(name = "coordinate_id", required = false) Long coordinateId,
                                                @ApiParam(name = "x_min", required = false) @RequestParam(name = "x_min", required = false) Integer x_min,
                                                @ApiParam(name = "x_max", required = false) @RequestParam(name = "x_max", required = false) Integer x_max,
                                                @ApiParam(name = "y_min", required = false) @RequestParam(name = "y_min", required = false) Integer y_min,
                                                @ApiParam(name = "y_max", required = false) @RequestParam(name = "y_max", required = false) Integer y_max,
+                                               @ApiParam(name = "car_id", required = false) @RequestParam(name = "car_id", required = false) Long carId,
                                                @ApiParam(name = "car_name", required = false) @RequestParam(value = "car_name", required = false) String carName,
                                                @ApiParam(name = "car_cool", required = false) @RequestParam(value = "car_cool", required = false) Boolean carCool,
                                                @ApiParam(name = "car_max_seats_min", required = false) @RequestParam(value = "car_max_seats_min", required = false) Integer carMaxSeats_min,
@@ -70,10 +76,12 @@ public class HumanController {
         if (s_creationDate_max != null) {
             creationDate_max = LocalDate.parse(s_creationDate_max);
         }
+        log.info("CHECK DIS");
         return new ResponseEntity<>(humanService.fetchAllHumans(page,
                 size,
                 sort,
                 order,
+                id,
                 name,
                 creationDate_min,
                 creationDate_max,
@@ -85,15 +93,19 @@ public class HumanController {
                 minutesOfWaiting_min,
                 minutesOfWaiting_max,
                 mood,
+                coordinateId,
                 x_min,
                 x_max,
                 y_min,
                 y_max,
-                carName,
+                carId,
+                carName
+                ,
                 carCool,
                 carMaxSeats_min,
                 carMaxSeats_max,
-                isDriver), HttpStatus.OK);
+                isDriver
+                ), HttpStatus.OK);
     }
 
 
@@ -103,18 +115,16 @@ public class HumanController {
     @ApiOperation(value = "Produce new human.",
             produces = MediaType.APPLICATION_XML_VALUE,
             consumes = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<Human> addHuman(@ApiParam(name = "human", required = true) @RequestBody(required = true) Human human) throws ModelException {
+    public ResponseEntity<Human> addHuman(@ApiParam(name = "human", required = true) @RequestBody(required = true) HumanDTO human) throws ModelException {
         try {
             Human new_human = humanService.saveHuman(human.getName(), human.getRealHero(), human.getHasToothpick(), human.getImpactSpeed(),
-                    human.getSoundtrackName(), human.getMinutesOfWaiting(), human.getMood().getMood(), human.getCoordinate() == null ? null : human.getCoordinate().getX(), human.getCoordinate() == null ? null : human.getCoordinate().getY(), null, human.getIsDriver());
+                    human.getSoundtrackName(), human.getMinutesOfWaiting(), human.getMood()== null? null:human.getMood().getMood(), human.getCoordinateId(), human.getCarId(), human.getIsDriver());
             return new ResponseEntity<>(new_human, HttpStatus.OK);
         } catch (TransactionSystemException e) {
             System.out.println(e.getMessage());
-            //Limits for x/y: 400
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
         } catch (ModelException e) {
             System.out.println(e.getMessage());
-            // Server error: something happened        500
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
@@ -134,12 +144,12 @@ public class HumanController {
             @ApiResponse(code = 500, message = "Internal server Error")
     })
     public HttpStatus updateHuman(@ApiParam("human-id") @PathVariable(name = "human-id") Long id,
-                                  @ApiParam(name = "human") @RequestBody() Human human
+                                  @ApiParam(name = "human") @RequestBody() HumanDTO human
     ) throws ModelException {
 //        System.out.println("LMAO");
         try {
             if (humanService.updateHumanById(id, human.getName(), human.getRealHero(), human.getHasToothpick(), human.getImpactSpeed(),
-                    human.getSoundtrackName(), human.getMinutesOfWaiting(), human.getMood().getMood(), human.getCoordinate() == null ? null : human.getCoordinate().getX(), human.getCoordinate() == null ? null : human.getCoordinate().getY(), null, human.getIsDriver())) {
+                    human.getSoundtrackName(), human.getMinutesOfWaiting(), human.getMood().getMood(), human.getCoordinateId(), human.getCarId(), human.getIsDriver())) {
                 return HttpStatus.OK;
             } else {
                 // Server error: something happened        500
@@ -167,7 +177,7 @@ public class HumanController {
                                       @ApiParam("mood") @PathVariable(name = "mood", required = true) String mood
     ) throws ModelException {
         try {
-            if (humanService.updateHumanById(id, null, null, null, null, null, null, mood, null, null, null, null)) {
+            if (humanService.updateHumanById(id, null, null, null, null, null, null, mood, null, null, null)) {
                 return HttpStatus.OK;
             } else {
                 // Server error: something happened        500
@@ -191,7 +201,7 @@ public class HumanController {
     public HttpStatus updateHumanWithCar(@ApiParam(name = "human-id", required = true) @PathVariable(name = "human-id", required = true) Long humanId,
                                             @ApiParam(name = "car-id", required = true) @PathVariable(name = "car-id", required = true) Long carId) {
         try {
-            if (humanService.updateHumanById(humanId, null, null, null, null, null, null, null, null, null, carId, null)) {
+            if (humanService.updateHumanById(humanId, null, null, null, null, null, null, null, null, carId, null)) {
                 return HttpStatus.OK;
             } else {
                 // Server error: something happened        500

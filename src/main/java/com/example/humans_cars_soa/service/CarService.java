@@ -10,6 +10,7 @@ public interface CarService {
                              Integer size,
                              String sort,
                              String order,
+                             Long id,
                              String name,
                              Boolean cool,
                              Integer maxSeats_min,

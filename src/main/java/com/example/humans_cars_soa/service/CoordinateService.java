@@ -10,6 +10,7 @@ public interface CoordinateService {
                                     Integer size,
                                     String sort,
                                     String order,
+                                    Long id,
                                     Integer x_min,
                                     Integer x_max,
                                     Integer y_min,

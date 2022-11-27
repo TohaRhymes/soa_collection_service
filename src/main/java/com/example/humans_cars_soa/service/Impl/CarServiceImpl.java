@@ -43,19 +43,29 @@ public class CarServiceImpl implements CarService {
     @Override
     @Transactional
     public Page fetchAllCars(Integer page,
-                                       Integer size,
-                                       String sort,
-                                       String order,
-                                       String name,
-                                       Boolean cool,
-                                       Integer maxSeats_min,
-                                       Integer maxSeats_max) {
+                             Integer size,
+                             String sort,
+                             String order,
+                             Long id,
+                             String name,
+                             Boolean cool,
+                             Integer maxSeats_min,
+                             Integer maxSeats_max) {
         name = checkNull(name, "");
         maxSeats_min = checkNull(maxSeats_min, Integer.MIN_VALUE);
         maxSeats_max = checkNull(maxSeats_max, Integer.MAX_VALUE);
 
+        Long id_min = checkNull(id, Long.MIN_VALUE);
+        Long id_max = checkNull(id, Long.MAX_VALUE);
+
         Pageable pageable = getPageable(page, size, sort, order);
-        Page<Object[]> start = carRepository.findCarFilter(pageable, "%" + name + "%", cool, maxSeats_min, maxSeats_max);
+        Page<Object[]> start = carRepository.findCarFilter(pageable,
+                id_min,
+                id_max,
+                "%" + name + "%",
+                cool,
+                maxSeats_min,
+                maxSeats_max);
         List<Car> finish = new ArrayList<>();
         for (Object[] el : start) {
             Car new_el = new Car();

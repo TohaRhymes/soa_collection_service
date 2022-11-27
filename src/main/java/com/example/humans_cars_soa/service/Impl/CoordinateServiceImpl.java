@@ -40,6 +40,7 @@ public class CoordinateServiceImpl implements CoordinateService {
                                     Integer size,
                                     String sort,
                                     String order,
+                                    Long id,
                                     Integer x_min,
                                     Integer x_max,
                                     Integer y_min,
@@ -49,8 +50,17 @@ public class CoordinateServiceImpl implements CoordinateService {
         y_min = checkNull(y_min, Integer.MIN_VALUE);
         y_max = checkNull(y_max, Integer.MAX_VALUE);
 
+        Long id_min = checkNull(id, Long.MIN_VALUE);
+        Long id_max = checkNull(id, Long.MAX_VALUE);
+
         Pageable pageable = getPageable(page, size, sort, order);
-        Page<Object[]> start = coordinateRepository.findCoordinateFilter(pageable, x_min, x_max, y_min, y_max);
+        Page<Object[]> start = coordinateRepository.findCoordinateFilter(pageable,
+                id_min,
+                id_max,
+                x_min,
+                x_max,
+                y_min,
+                y_max);
         List<Coordinate> finish = new ArrayList<>();
         for (Object[] el : start) {
             Coordinate new_el = new Coordinate();

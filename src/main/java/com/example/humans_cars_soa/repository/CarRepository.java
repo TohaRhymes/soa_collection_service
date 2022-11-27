@@ -19,9 +19,16 @@ public interface CarRepository extends CrudRepository<Car, Long>, JpaRepository<
 
     @Query("SELECT car.id, car.name, car.cool, car.maxSeats " +
             "FROM Car car " +
-            "where (LOWER(car.name) like LOWER(:name))" +
+            "WHERE car.id >= :id_min and car.id <= :id_max " +
+            "AND (LOWER(car.name) like LOWER(:name))" +
             "and ( :cool IS NULL OR car.cool = :cool ) " +
             "and :maxSeats_min <= car.maxSeats and car.maxSeats <= :maxSeats_max")
-    Page<Object[]> findCarFilter(Pageable pageable, String name, Boolean cool, Integer maxSeats_min, Integer maxSeats_max);
+    Page<Object[]> findCarFilter(Pageable pageable,
+                                 Long id_min,
+                                 Long id_max,
+                                 String name,
+                                 Boolean cool,
+                                 Integer maxSeats_min,
+                                 Integer maxSeats_max);
 
 }
