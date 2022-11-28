@@ -57,7 +57,7 @@ public class HumanController {
                                                @ApiParam(name = "minutes_of_waiting_max", required = false) @RequestParam(name = "minutes_of_waiting_max", required = false) Integer minutesOfWaiting_max,
                                                @ApiParam(name = "mood", required = false) @RequestParam(name = "mood", required = false) String mood,
                                                @ApiParam(name = "coordinate_id", required = false) @RequestParam(name = "coordinate_id", required = false) Long coordinateId,
-                                               @ApiParam(name = "x_min", required = false) @RequestParam(name = "x_min", required = false) Integer x_min,
+                                               @ApiParam(name = "x_min", required = false) @RequestParam(name = "human.getCar()x_min", required = false) Integer x_min,
                                                @ApiParam(name = "x_max", required = false) @RequestParam(name = "x_max", required = false) Integer x_max,
                                                @ApiParam(name = "y_min", required = false) @RequestParam(name = "y_min", required = false) Integer y_min,
                                                @ApiParam(name = "y_max", required = false) @RequestParam(name = "y_max", required = false) Integer y_max,
@@ -149,7 +149,7 @@ public class HumanController {
 //        System.out.println("LMAO");
         try {
             if (humanService.updateHumanById(id, human.getName(), human.getRealHero(), human.getHasToothpick(), human.getImpactSpeed(),
-                    human.getSoundtrackName(), human.getMinutesOfWaiting(), human.getMood().getMood(), human.getCoordinateId(), human.getCarId(), human.getIsDriver())) {
+                    human.getSoundtrackName(), human.getMinutesOfWaiting(), human.getMood()== null? null:human.getMood().getMood(), human.getCoordinateId(), human.getCarId(), human.getIsDriver())) {
                 return HttpStatus.OK;
             } else {
                 // Server error: something happened        500

@@ -148,6 +148,9 @@ public class HumanServiceImpl implements HumanService {
             if (el[1] != null) {
                 new_el.setName((String) el[1]);
             }
+            if (el[2] != null) {
+                new_el.setCreationDate((LocalDate) el[2]);
+            }
             if (el[3] != null) {
                 new_el.setRealHero((Boolean) el[3]);
             }
@@ -167,13 +170,6 @@ public class HumanServiceImpl implements HumanService {
                 new_el.setIsDriver((Boolean) el[9]);
             }
             new_el.setMood((Mood) el[8]);
-//            if (new_mood != null) {
-//                switch (new_mood.toLowerCase().strip()) {
-//                    case ("sorrow") -> new_el.setMood(Mood.SORROW);
-//                    case ("apathy") -> new_el.setMood(Mood.APATHY);
-//                    case ("frenzy") -> new_el.setMood(Mood.FRENZY);
-//                }
-//            }
 
             Coordinate new_coord = new Coordinate();
             new_coord.setId(((Long) el[10]).longValue())
@@ -277,7 +273,6 @@ public class HumanServiceImpl implements HumanService {
                     }
                 }
                 if (human.getCoordinate() == null) {
-                    log.info("DLSK:LAKL:K:LS");
                     throw new ModelException("Need existing coordinates ID");
                 }
 
@@ -291,14 +286,33 @@ public class HumanServiceImpl implements HumanService {
                         Boolean stolen = Boolean.FALSE;
                         // Если все свободно - становимся водителем.
                         // Если все занято - выкидываем водителя (произошла кража).
+                        Coordinate coordinate = human.getCoordinate();
+                        if (coordinate == null) {
+                            coordinate = new Coordinate().setX(1).setY(1);
+                        }
                         if (hbs.size() == 0) {
-//                            log.info("In - 1");
                             _isDriver = Boolean.TRUE;
                         } else if (car.getMaxSeats().equals(hbs.size())) {
+                            Coordinate _coordinate = hbs.get(0).getCoordinate();
+                            coordinate.setX(_coordinate.getX()).setY(_coordinate.getY());
                             log.info("Stolen");
                             _isDriver = Boolean.TRUE;
                             stolen = Boolean.TRUE;
+                        } else {
+                            Boolean checkDriver = Boolean.FALSE;
+                            for (Human hb : hbs) {
+                                if (hb.getIsDriver() != null && hb.getIsDriver()) {
+                                    checkDriver = Boolean.TRUE;
+                                    break;
+                                }
+                            }
+                            if (!checkDriver) {
+                                _isDriver = Boolean.TRUE;
+                            }
+                            Coordinate _coordinate = hbs.get(0).getCoordinate();
+                            coordinate.setX(_coordinate.getX()).setY(_coordinate.getY());
                         }
+                        this.coordinateService.saveCoordinate(coordinate);
                         if (_isDriver.equals(Boolean.TRUE)) {
 //                            log.info("In - 3");
                             for (Human hb : hbs) {
@@ -386,8 +400,7 @@ public class HumanServiceImpl implements HumanService {
                 }
 
 
-//                human.setIsDriver(isDriver);
-                Long previousCarId = human.getCar().getId();
+                Long previousCarId = human.getCar() == null ? null : human.getCar().getId();
                 Boolean _isDriver = Boolean.FALSE;
                 if (isDriver != null) {
                     _isDriver = isDriver;
@@ -396,7 +409,8 @@ public class HumanServiceImpl implements HumanService {
                 }
                 Boolean stolen = Boolean.FALSE;
                 ArrayList<Human> hbs = null;
-                if (carId != null && !previousCarId.equals(carId)) {
+                boolean change_driver = true;
+                if (carId != null && (previousCarId == null || !previousCarId.equals(carId))) {
                     Car car = carService.fetchCarById(carId);
                     if (car != null) {
                         human.setCar(car);
@@ -413,29 +427,62 @@ public class HumanServiceImpl implements HumanService {
                                 }
                             }
                             if (!previousDriver) {
-                                hbs.get(0).setIsDriver(Boolean.TRUE);
+                                humanRepository.save(hbs.get(0).setIsDriver(Boolean.TRUE));
+//                                hbs.get(0).setIsDriver(Boolean.TRUE);
+                                // МБ СОХРАНИТЬ НАДО В БД?
                             }
                         }
+
+                        Coordinate coordinate = human.getCoordinate();
+
                         hbs = this.fetchAllHumansByCarId(car.getId());
                         if (hbs.size() == 0) {
                             _isDriver = Boolean.TRUE;
-                        } else if (car.getMaxSeats().equals(hbs.size())) {
+                            change_driver = false;
+                        } else if (car.getMaxSeats().equals(hbs.size() - 1)) {
+                            Coordinate _coordinate = hbs.get(0).getCoordinate();
+                            coordinate.setX(_coordinate.getX()).setY(_coordinate.getY());
                             _isDriver = Boolean.TRUE;
                             stolen = Boolean.TRUE;
+                            change_driver = false;
+                        } else {
+                            Coordinate _coordinate = hbs.get(0).getCoordinate();
+                            coordinate.setX(_coordinate.getX()).setY(_coordinate.getY());
                         }
                         previousCarId = car.getId();
+                    }
+                }
+                if (change_driver & carId != null) {
+
+                    boolean checkDriver = false;
+                    for (Human hb : hbs) {
+                        if (hb.getIsDriver() != null &&
+                                hb.getIsDriver() &&
+                                !hb.getId().equals(human.getId())) {
+                            if (_isDriver) {
+                                hb.setIsDriver(Boolean.FALSE);
+                            } else {
+                                checkDriver = true;
+                                break;
+
+                            }
+                        }
+                    }
+                    if (!checkDriver) {
+                        _isDriver = true;
                     }
                 }
                 if (previousCarId != null && _isDriver.equals(Boolean.TRUE)) {
                     if (hbs != null) {
                         for (Human hb : hbs) {
+                            System.out.println(hb.getId());
                             if (hb.getIsDriver().equals(Boolean.TRUE) && stolen.equals(Boolean.TRUE)) {
                                 hb.setCar(null);
                                 hb.setIsDriver(Boolean.FALSE);
-                                humanRepository.save(hb);
                             } else if (hb.getIsDriver().equals(Boolean.TRUE)) {
                                 hb.setIsDriver(Boolean.FALSE);
                             }
+                            humanRepository.save(hb);
                         }
                     }
                 }
