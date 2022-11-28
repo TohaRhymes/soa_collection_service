@@ -101,11 +101,9 @@ public class CoordinateServiceImpl implements CoordinateService {
 
         return Boolean.TRUE.equals(template.execute(transactionStatus -> {
             try {
-                if (x != null)
-                    coordinate.setX(x);
-                if (y != null)
-                    coordinate.setY(y);
-                Coordinate newCoordinate = this.saveCoordinate(coordinate);
+                coordinate.setX(x);
+                coordinate.setY(y);
+                this.saveCoordinate(coordinate);
                 log.info("Updated coordinate with id number {}", id);
                 return true;
             } catch (Exception e) {

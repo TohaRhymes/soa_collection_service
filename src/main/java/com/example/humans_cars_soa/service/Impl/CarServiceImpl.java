@@ -108,12 +108,9 @@ public class CarServiceImpl implements CarService {
 
         return Boolean.TRUE.equals(template.execute(transactionStatus -> {
             try {
-                if (name != null)
-                    car.setName(name);
-                if (cool != null)
-                    car.setCool(cool);
-                if (maxSeats != null)
-                    car.setMaxSeats(maxSeats);
+                car.setName(name);
+                car.setCool(cool);
+                car.setMaxSeats(maxSeats);
                 carRepository.save(car);
                 log.info("Updated car with id number {}", id);
                 return true;

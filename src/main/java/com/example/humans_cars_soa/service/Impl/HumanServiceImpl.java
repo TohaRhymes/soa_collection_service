@@ -453,6 +453,7 @@ public class HumanServiceImpl implements HumanService {
                     }
                 }
                 if (change_driver & carId != null) {
+                    hbs = this.fetchAllHumansByCarId(carId);
 
                     boolean checkDriver = false;
                     for (Human hb : hbs) {
