@@ -106,6 +106,8 @@ public interface HumanRepository extends CrudRepository<Human, Long>, JpaReposit
 
     List<Human> findHumansByCarId(Long id);
 
+    List<Human> findHumansByCoordinateId(Long id);
+
     List<Human> findHumansBySoundtrackName(String soundtrackName);
 
 

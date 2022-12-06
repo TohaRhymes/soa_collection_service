@@ -9,6 +9,8 @@ import javax.validation.constraints.Size;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -85,6 +87,7 @@ public class Human implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "car_id")
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private Car car;
     @Column(name = "is_driver")
     @ApiModelProperty(example = "true")

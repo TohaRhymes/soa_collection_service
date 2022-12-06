@@ -1,6 +1,7 @@
 package com.example.humans_cars_soa.service;
 
 import com.example.humans_cars_soa.exception.ModelException;
+import com.example.humans_cars_soa.exception.UniqueException;
 import com.example.humans_cars_soa.model.Human;
 import org.springframework.data.domain.Page;
 
@@ -57,7 +58,7 @@ public interface HumanService {
                            String mood,
                            Long coordinateId,
                            Long carId,
-                           Boolean isDriver) throws ModelException;
+                           Boolean isDriver) throws ModelException, UniqueException;
 
     public boolean updateHumanById(Long id,
                                    String name,
@@ -69,7 +70,7 @@ public interface HumanService {
                                    String mood,
                                    Long coordinateId,
                                    Long carId,
-                                   Boolean isDriver) throws ModelException;
+                                   Boolean isDriver) throws ModelException, UniqueException;
 
     public boolean deleteHumanById(Long id);
 

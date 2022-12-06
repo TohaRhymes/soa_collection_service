@@ -1,6 +1,8 @@
 package com.example.humans_cars_soa.service.Impl;
 
 import com.example.humans_cars_soa.exception.ModelException;
+import com.example.humans_cars_soa.model.Human;
+import com.example.humans_cars_soa.repository.HumanRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,12 +27,14 @@ public class CarServiceImpl implements CarService {
 
 
     private final CarRepository carRepository;
+    private final HumanRepository humanRepository;
     private final TransactionTemplate template;
 
 
     @Autowired
-    public CarServiceImpl(CarRepository carRepository, PlatformTransactionManager txManager) {
+    public CarServiceImpl(CarRepository carRepository, HumanRepository humanRepository, PlatformTransactionManager txManager) {
         this.carRepository = carRepository;
+        this.humanRepository = humanRepository;
         this.template = new TransactionTemplate(txManager);
     }
 
@@ -92,8 +96,13 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
+    @Transactional
     public boolean deleteCarById(Long id) {
         if (carRepository.findById(id).isPresent()) {
+            List<Human> humans = new ArrayList<>(humanRepository.findHumansByCarId(id));
+            for (Human human : humans) {
+                human.setCar(null);
+            }
             carRepository.deleteById(id);
             return true;
         }

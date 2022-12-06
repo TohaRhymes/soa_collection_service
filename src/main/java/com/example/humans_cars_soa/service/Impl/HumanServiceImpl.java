@@ -1,6 +1,7 @@
 package com.example.humans_cars_soa.service.Impl;
 
 import com.example.humans_cars_soa.exception.ModelException;
+import com.example.humans_cars_soa.exception.UniqueException;
 import com.example.humans_cars_soa.model.*;
 import com.example.humans_cars_soa.service.CarService;
 import com.example.humans_cars_soa.service.CoordinateService;
@@ -245,7 +246,7 @@ public class HumanServiceImpl implements HumanService {
                            String mood,
                            Long coordinateId,
                            Long carId,
-                           Boolean isDriver) throws ModelException {
+                           Boolean isDriver) throws ModelException, UniqueException {
         System.out.println(mood);
         System.out.println("FUCK1");
         Human human = new Human();
@@ -268,6 +269,9 @@ public class HumanServiceImpl implements HumanService {
                 if (coordinateId != null) {
                     Coordinate coordinate = this.coordinateService.fetchCoordinateById(coordinateId);
                     if (coordinate != null) {
+                        if(!humanRepository.findHumansByCoordinateId(coordinateId).isEmpty()){
+                            throw new UniqueException("Provided coordinateId is already in use!");
+                        }
                         human.setCoordinate(coordinate);
                         log.info("Cooords id: {}", coordinate.getId());
                     }
@@ -358,7 +362,7 @@ public class HumanServiceImpl implements HumanService {
                                    String mood,
                                    Long coordinateId,
                                    Long carId,
-                                   Boolean isDriver) throws ModelException {
+                                   Boolean isDriver) throws ModelException, UniqueException {
         Human human = this.fetchHumanById(id);
         System.out.println(mood);
         System.out.println("FUCK1");

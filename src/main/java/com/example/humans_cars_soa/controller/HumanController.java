@@ -2,6 +2,7 @@ package com.example.humans_cars_soa.controller;
 
 
 import com.example.humans_cars_soa.exception.ModelException;
+import com.example.humans_cars_soa.exception.UniqueException;
 import com.example.humans_cars_soa.model.Human;
 import com.example.humans_cars_soa.model.HumanDTO;
 import com.example.humans_cars_soa.service.HumanService;
@@ -104,7 +105,7 @@ public class HumanController {
                 carMaxSeats_min,
                 carMaxSeats_max,
                 isDriver
-                ), HttpStatus.OK);
+        ), HttpStatus.OK);
     }
 
 
@@ -114,10 +115,16 @@ public class HumanController {
     @ApiOperation(value = "Produce new human.",
             produces = MediaType.APPLICATION_XML_VALUE,
             consumes = MediaType.APPLICATION_XML_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully added"),
+            @ApiResponse(code = 400, message = "Error formating: (check values requirements and restrictions)."),
+            @ApiResponse(code = 406, message = "Provided coordinateID is in use"),
+            @ApiResponse(code = 500, message = "Internal server Error")
+    })
     public ResponseEntity<Human> addHuman(@ApiParam(name = "human", required = true) @RequestBody(required = true) HumanDTO human) throws ModelException {
         try {
             Human new_human = humanService.saveHuman(human.getName(), human.getRealHero(), human.getHasToothpick(), human.getImpactSpeed(),
-                    human.getSoundtrackName(), human.getMinutesOfWaiting(), human.getMood()== null? null:human.getMood().getMood(), human.getCoordinateId(), human.getCarId(), human.getIsDriver());
+                    human.getSoundtrackName(), human.getMinutesOfWaiting(), human.getMood() == null ? null : human.getMood().getMood(), human.getCoordinateId(), human.getCarId(), human.getIsDriver());
             return new ResponseEntity<>(new_human, HttpStatus.OK);
         } catch (TransactionSystemException e) {
             System.out.println(e.getMessage());
@@ -125,7 +132,9 @@ public class HumanController {
         } catch (ModelException e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-
+        } catch (UniqueException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
         }
         //Server error        500
     }
@@ -148,7 +157,7 @@ public class HumanController {
 //        System.out.println("LMAO");
         try {
             if (humanService.updateHumanById(id, human.getName(), human.getRealHero(), human.getHasToothpick(), human.getImpactSpeed(),
-                    human.getSoundtrackName(), human.getMinutesOfWaiting(), human.getMood()== null? null:human.getMood().getMood(), human.getCoordinateId(), human.getCarId(), human.getIsDriver())) {
+                    human.getSoundtrackName(), human.getMinutesOfWaiting(), human.getMood() == null ? null : human.getMood().getMood(), human.getCoordinateId(), human.getCarId(), human.getIsDriver())) {
                 return HttpStatus.OK;
             } else {
                 // Server error: something happened        500
@@ -157,6 +166,9 @@ public class HumanController {
         } catch (ModelException | TransactionSystemException e) {
             // ID not found (400)
             return HttpStatus.BAD_REQUEST;
+        } catch (UniqueException e) {
+            System.out.println(e.getMessage());
+            return HttpStatus.NOT_ACCEPTABLE;
         }
     }
 
@@ -185,6 +197,9 @@ public class HumanController {
         } catch (ModelException | TransactionSystemException e) {
             // ID not found (400)
             return HttpStatus.BAD_REQUEST;
+        } catch (UniqueException e) {
+            System.out.println(e.getMessage());
+            return HttpStatus.NOT_ACCEPTABLE;
         }
     }
 
@@ -195,10 +210,10 @@ public class HumanController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated"),
             @ApiResponse(code = 400, message = "Bad request"),
-            @ApiResponse(code=500, message = "Internal server Error")
+            @ApiResponse(code = 500, message = "Internal server Error")
     })
     public HttpStatus updateHumanWithCar(@ApiParam(name = "human-id", required = true) @PathVariable(name = "human-id", required = true) Long humanId,
-                                            @ApiParam(name = "car-id", required = true) @PathVariable(name = "car-id", required = true) Long carId) {
+                                         @ApiParam(name = "car-id", required = true) @PathVariable(name = "car-id", required = true) Long carId) {
         try {
             if (humanService.updateHumanById(humanId, null, null, null, null, null, null, null, null, carId, null)) {
                 return HttpStatus.OK;
@@ -206,9 +221,12 @@ public class HumanController {
                 // Server error: something happened        500
                 return HttpStatus.INTERNAL_SERVER_ERROR;
             }
-        }  catch (ModelException | TransactionSystemException e) {
+        } catch (ModelException | TransactionSystemException e) {
             // ID not found (400)
             return HttpStatus.BAD_REQUEST;
+        } catch (UniqueException e) {
+            System.out.println(e.getMessage());
+            return HttpStatus.NOT_ACCEPTABLE;
         }
     }
 
